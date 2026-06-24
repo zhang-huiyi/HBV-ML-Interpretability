@@ -1,2 +1,2 @@
 # HBV-ML-Interpretability
-SHAP-driven feature engineering for multi-outcome risk stratification in chronic hepatitis B
+Interpretability-driven feature engineering enables compact and accurate multi-outcome risk stratification in chronic hepatitis B 
