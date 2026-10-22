@@ -4,9 +4,9 @@
 # ====== DeLong Test ======
 
 ######################################################################
-# SCI Ultimate DeLong Test Pipeline
-# 8 Machine Learning Models
-# 完整SCI增强版（最终完整版）
+# Pairwise DeLong tests for the eight candidate models
+# XGBoost, LightGBM, GBM, GLMNet, Conditional RF, RF, MLP, Logistic Regression
+
 ######################################################################
 
 rm(list = ls())
@@ -1019,7 +1019,7 @@ saveWorkbook(
 
 cat("\n====================================================\n")
 
-cat("SCI完整版DeLong分析完成！\n")
+cat("DeLong分析完成！\n")
 
 cat("结果目录:\n")
 
@@ -1031,7 +1031,7 @@ cat("====================================================\n")
 
 
 ##########################################################
-# SCI顶刊级 ROC 曲线最终正式版（Nature终极版）
+# ROC 曲线绘制
 ##########################################################
 # 功能：
 #
@@ -1040,7 +1040,7 @@ cat("====================================================\n")
 # 3. 自动绘制三个结局ROC图
 # 4. 自动高亮最佳模型
 # 5. Nature风格玻璃辉光效果
-# 6. publication-ready TIFF/PDF/PNG
+# 6. 高分辨率 TIFF / PDF / PNG 输出
 # 7. 图例内置
 # 8. Nature Medicine 风格
 
@@ -1077,7 +1077,7 @@ for(p in pkgs){
 # 2. 输出目录
 ##########################################################
 
-output_dir <- "SCI_Publication_ROC_Nature"
+output_dir <- "J:/rtools45/SCI_Publication_ROC_Nature"
 
 if(!dir.exists(output_dir)){
   dir.create(output_dir, recursive = TRUE)
@@ -1149,7 +1149,7 @@ model_display_names <- c(
 # 5. 基础路径
 ##########################################################
 
-base_path <- "C:/Users/user/Desktop/小论文/ML数据"
+base_path <- "J:/rtools45"
 
 ##########################################################
 # 6. 自动创建ROC路径
@@ -1985,29 +1985,18 @@ cat("====================================================\n")
 
 
 ######################################################################
-# XGBoost 可视化最终SCI拼图版（12图拼接专用）
+# XGBoost 可视化（12 图拼接）
 #
-# 最终用途：
-# 12张小图拼接成SCI总图
+# 用途：
+# 12 张小图拼接为一张总图
 #
 # 包含：
 # 1. Probability Distribution
 # 2. Probability Boxplot
 # 3. Top15 Feature Importance
 #
-# 已修复：
-# ✓ 字体太小
-# ✓ 拼图后不可读
-# ✓ showtext冲突
-# ✓ Arial冲突
-# ✓ dpi缩放问题
-# ✓ Windows查看器缩放问题
-#
-# 当前版本：
-# ✓ 拼图专用超大字体
-# ✓ Nature Medicine风格
-# ✓ SCI投稿版
-# ✓ 600 dpi
+# 输出：
+# 拼图专用大字体，Nature Medicine 配色，600 dpi
 ######################################################################
 
 rm(list = ls())
@@ -2041,7 +2030,7 @@ for(p in pkgs){
 ######################################################################
 
 # XGBoost结果路径
-result_dir <- "C:/Users/user/Desktop/小论文/ML数据/XGBoost_Results"
+result_dir <- "J:/rtools45/XGBoost_Results"
 
 # 总输出路径
 base_output_dir <- "J:/rtools45"
@@ -2875,7 +2864,7 @@ cat(output_dir, "\n")
 ###############################################################################
 # SCI 4×3 合成总图
 # 风格照搬原始子图（颜色/图层/图例位置/背景 不变）
-# 字体统一为合图可读大小（参考 SHAP V16）
+# 字体统一为合图可读大小（参考 SHAP 主图）
 # 标签 22pt bold
 ###############################################################################
 
@@ -2883,9 +2872,9 @@ rm(list = ls()); gc()
 pkgs <- c("data.table","dplyr","ggplot2","cowplot","stringr","scales")
 for(p in pkgs) if(!require(p, character.only=TRUE)){ install.packages(p); library(p, character.only=TRUE) }
 
-base_path  <- "C:/Users/user/Desktop/小论文/ML数据"
+base_path  <- "J:/rtools45"
 xgb_dir    <- file.path(base_path, "XGBoost_Results")
-output_dir <- file.path(base_path, "Combined_Figure_4x3_v3")
+output_dir <- file.path(base_path, "Combined_Figure_4x3")
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
 outcome_order <- c("Outcome_Disease_Non_Progression",
