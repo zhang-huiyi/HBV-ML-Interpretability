@@ -1,26 +1,14 @@
 ######################################################################
-# TOP JOURNAL TREE-SHAP ANALYSIS PIPELINE
-# FINAL FULL VERSION
-#
-# SCI / Hepatology / Gut / Nature Communications READY
-#
-# 包含：
-# ✓ 真正TreeSHAP
-# ✓ Native XGBoost Booster
-# ✓ Feature Alignment验证
-# ✓ Prediction一致性验证
-# ✓ AUC一致性验证
-# ✓ SHAP Main Effect
-# ✓ SHAP Importance
-# ✓ SHAP Bootstrap Stability
-# ✓ Beeswarm数据
-# ✓ Dependence数据
-# ✓ Standardized Waterfall
-# ✓ TreeSHAP Interaction
-# ✓ Interaction Summary
-# ✓ Interaction Detail
-# ✓ Interaction Bootstrap Stability
-# ✓ Full Reproducibility
+# 04_SHAP_analysis.R
+# ----------------------------------------------------------------------------
+# 用途：读取 02 训练好的各结局 XGBoost 模型，计算 TreeSHAP，输出论文所需的
+#       SHAP 重要性、蜂群图与依赖图数据、标准化瀑布图数据，以及 TreeSHAP
+#       交互的汇总与明细结果。
+# 一致性校验：特征对齐校验、预测一致性校验、AUC 一致性校验，结果写入校验报告。
+# 运行前提：先运行 02，确保各结局的完整模型与测试集预测已生成。
+# 输出：save_dir 下的 SHAP 结果 CSV / RDS 与校验报告。
+# 依赖包：xgboost, data.table, dplyr, tidyr, pROC
+# ----------------------------------------------------------------------------
 ######################################################################
 
 rm(list = ls())
@@ -77,7 +65,7 @@ model_files <- list.files(
 )
 
 cat("====================================================\n")
-cat(" TOP JOURNAL TREE-SHAP PIPELINE\n")
+cat(" TreeSHAP ANALYSIS PIPELINE\n")
 cat("====================================================\n\n")
 
 print(basename(model_files))
@@ -375,75 +363,7 @@ for(model_path in model_files){
       )
     )
     
-    ##################################################################
-    # 4.12 Bootstrap SHAP stability
-    ##################################################################
-    
-    cat("Running SHAP bootstrap stability...\n")
-    
-    B <- 100
-    
-    boot_mat <- matrix(
-      
-      NA,
-      
-      nrow = length(feature_cols),
-      
-      ncol = B
-    )
-    
-    for(b in 1:B){
-      
-      idx <- sample(
-        1:nrow(shap_mat),
-        replace = TRUE
-      )
-      
-      boot_mat[, b] <- colMeans(
-        abs(shap_mat[idx, ])
-      )
-    }
-    
-    shap_boot <- data.frame(
-      
-      Feature = feature_cols,
-      
-      Mean = rowMeans(boot_mat),
-      
-      SD = apply(
-        boot_mat,
-        1,
-        sd
-      ),
-      
-      CI_low = apply(
-        boot_mat,
-        1,
-        quantile,
-        0.025
-      ),
-      
-      CI_high = apply(
-        boot_mat,
-        1,
-        quantile,
-        0.975
-      )
-    )
-    
-    shap_boot <- shap_boot %>%
-      arrange(desc(Mean))
-    
-    fwrite(
-      shap_boot,
-      file.path(
-        out_dir,
-        "SHAP_Bootstrap_Stability.csv"
-      )
-    )
-    
-    ##################################################################
-    # 4.13 Beeswarm data
+    # 4.12 Beeswarm data
     ##################################################################
     
     cat("Saving beeswarm data...\n")
@@ -476,7 +396,7 @@ for(model_path in model_files){
     )
     
     ##################################################################
-    # 4.14 Dependence data
+    # 4.13 Dependence data
     ##################################################################
     
     cat("Saving dependence data...\n")
@@ -520,7 +440,7 @@ for(model_path in model_files){
     }
     
     ##################################################################
-    # 4.15 Standardized waterfall selection
+    # 4.14 Standardized waterfall selection
     ##################################################################
     
     cat("\nSelecting representative samples...\n")
@@ -569,7 +489,7 @@ for(model_path in model_files){
     )
     
     ##################################################################
-    # 4.16 Save waterfall data
+    # 4.15 Save waterfall data
     ##################################################################
     
     cat("Saving waterfall data...\n")
@@ -616,7 +536,7 @@ for(model_path in model_files){
     }
     
     ##################################################################
-    # 4.17 TRUE TreeSHAP interaction
+    # 4.16 TRUE TreeSHAP interaction
     ##################################################################
     
     cat("\nCalculating TreeSHAP interaction...\n")
@@ -645,7 +565,7 @@ for(model_path in model_files){
     )
     
     ##################################################################
-    # 4.18 Interaction summary
+    # 4.17 Interaction summary
     ##################################################################
     
     cat("Building interaction summary...\n")
@@ -710,7 +630,7 @@ for(model_path in model_files){
     )
     
     ##################################################################
-    # 4.19 Interaction detail
+    # 4.18 Interaction detail
     ##################################################################
     
     cat("Saving interaction details...\n")
@@ -756,87 +676,7 @@ for(model_path in model_files){
       )
     )
     
-    ##################################################################
-    # 4.20 Interaction bootstrap stability
-    ##################################################################
-    
-    cat("Running interaction bootstrap stability...\n")
-    
-    B_inter <- 100
-    
-    interaction_stability <- data.frame()
-    
-    for(k in 1:nrow(top_interaction)){
-      
-      f1 <- top_interaction$Feature1[k]
-      f2 <- top_interaction$Feature2[k]
-      
-      i <- which(feature_cols == f1)
-      j <- which(feature_cols == f2)
-      
-      boot_vals <- c()
-      
-      for(b in 1:B_inter){
-        
-        idx <- sample(
-          1:nrow(inter_array),
-          replace = TRUE
-        )
-        
-        val <- mean(
-          abs(
-            inter_array[idx, i, j]
-          )
-        )
-        
-        boot_vals <- c(
-          boot_vals,
-          val
-        )
-      }
-      
-      tmp <- data.frame(
-        
-        Feature1 = f1,
-        
-        Feature2 = f2,
-        
-        MeanInteraction =
-          mean(boot_vals),
-        
-        SD =
-          sd(boot_vals),
-        
-        CI_low =
-          quantile(boot_vals, 0.025),
-        
-        CI_high =
-          quantile(boot_vals, 0.975),
-        
-        CV =
-          sd(boot_vals) /
-          mean(boot_vals)
-      )
-      
-      interaction_stability <- rbind(
-        interaction_stability,
-        tmp
-      )
-    }
-    
-    interaction_stability <- interaction_stability %>%
-      arrange(CV)
-    
-    fwrite(
-      interaction_stability,
-      file.path(
-        out_dir,
-        "Interaction_Stability_Bootstrap.csv"
-      )
-    )
-    
-    ##################################################################
-    # 4.21 Save raw feature values
+    # 4.19 Save raw feature values
     ##################################################################
     
     fwrite(
@@ -857,7 +697,7 @@ for(model_path in model_files){
       )
     )
     ##################################################################
-    # 4.22 Metadata
+    # 4.20 Metadata
     ##################################################################
     
     meta <- list(
@@ -889,9 +729,6 @@ for(model_path in model_files){
       Interaction_Method =
         "TreeSHAP Interaction",
       
-      Bootstrap_Iterations =
-        100,
-      
       Waterfall_Strategy =
         "Percentile-based representative sample selection",
       
@@ -909,7 +746,7 @@ for(model_path in model_files){
     )
     
     ##################################################################
-    # 4.23 COMPLETE
+    # 4.21 COMPLETE
     ##################################################################
     
     cat("\n====================================================\n")
@@ -946,7 +783,7 @@ for(model_path in model_files){
 ######################################################################
 
 cat("\n====================================================\n")
-cat("✅ ALL TOP JOURNAL TREE-SHAP ANALYSES COMPLETE\n")
+cat("✅ ALL TREE-SHAP ANALYSES COMPLETE\n")
 cat("====================================================\n")
 
 cat("\nResults saved to:\n")
