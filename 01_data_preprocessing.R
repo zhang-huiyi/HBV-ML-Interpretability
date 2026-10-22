@@ -492,14 +492,14 @@ test_missing_summary <- calculate_missing_stats(
 
 write.csv(
   train_missing_summary,
-  "训练集缺失值统计.csv",
+  "J:/rtools45/训练集缺失值统计.csv",
   row.names = FALSE,
   fileEncoding = "UTF-8"
 )
 
 write.csv(
   test_missing_summary,
-  "测试集缺失值统计.csv",
+  "J:/rtools45/测试集缺失值统计.csv",
   row.names = FALSE,
   fileEncoding = "UTF-8"
 )
@@ -566,7 +566,7 @@ print(outlier_result)
 
 write.csv(
   outlier_result,
-  "异常值统计.csv",
+  "J:/rtools45/异常值统计.csv",
   row.names = FALSE,
   fileEncoding = "UTF-8"
 )
@@ -623,7 +623,7 @@ print(normality_results)
 
 write.csv(
   normality_results,
-  "正态性检验结果.csv",
+  "J:/rtools45/正态性检验结果.csv",
   row.names = FALSE,
   fileEncoding = "UTF-8"
 )
@@ -697,7 +697,7 @@ for(outcome in outcome_cols){
 
 write.csv(
   outcome_summary,
-  "结局变量分布.csv",
+  "J:/rtools45/结局变量分布.csv",
   row.names = FALSE,
   fileEncoding = "UTF-8"
 )
@@ -1186,7 +1186,7 @@ print(baseline_table)
 
 write.csv(
   baseline_table,
-  "Baseline_Table_With_SMD.csv",
+  "J:/rtools45/Baseline_Table_With_SMD.csv",
   row.names = FALSE,
   fileEncoding = "UTF-8"
 )
@@ -1202,26 +1202,37 @@ cat(strrep("=", 60), "\n")
 
 saveRDS(
   train_processed,
-  "train_preprocessed.rds"
+  "J:/rtools45/train_preprocessed.rds"
 )
 
 saveRDS(
   test_processed,
-  "test_preprocessed.rds"
+  "J:/rtools45/test_preprocessed.rds"
 )
 
 write.csv(
   train_processed,
-  "train_preprocessed.csv",
+  "J:/rtools45/train_preprocessed.csv",
   row.names = FALSE,
   fileEncoding = "UTF-8"
 )
 
 write.csv(
   test_processed,
-  "test_preprocessed.csv",
+  "J:/rtools45/test_preprocessed.csv",
   row.names = FALSE,
   fileEncoding = "UTF-8"
+)
+
+# 供 02 与 06 直接读取的建模数据
+write_xlsx(
+  train_processed,
+  "J:/rtools45/train_preprocessed.xlsx"
+)
+
+write_xlsx(
+  test_processed,
+  "J:/rtools45/test_preprocessed.xlsx"
 )
 
 cat("✓ 预处理数据保存完成\n")
@@ -1432,10 +1443,8 @@ report <- paste0(
   "【9. 输出文件】\n",
   "--------------------------------------------------\n",
   
-  "1. train_preprocessed.csv\n",
-  "2. test_preprocessed.csv\n",
-  "3. train_preprocessed.rds\n",
-  "4. test_preprocessed.rds\n",
+  "1. train_preprocessed.csv / .rds / .xlsx\n",
+  "2. test_preprocessed.csv / .rds / .xlsx\n",
   "5. 基线特征表_含P值.csv\n",
   "6. 训练集缺失值统计.csv\n",
   "7. 测试集缺失值统计.csv\n",
