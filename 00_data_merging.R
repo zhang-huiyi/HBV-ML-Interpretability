@@ -1,3 +1,13 @@
+######################################################################
+# 00_data_merging.R
+# ----------------------------------------------------------------------------
+# 用途：读入患者信息、病历号与患者唯一号的对应关系、检验数据，按患者与时点
+#       合并，形成后续建模所用的原始宽表，并输出基础统计结果。
+# 输出：合并后的 dhbv.xlsx 与 统计结果.xlsx，均写入当前工作目录。
+# 运行前提：本脚本为流程第一步，无上游依赖。
+# ----------------------------------------------------------------------------
+######################################################################
+
 # 读入数据
 library(readxl)
 患者 <- read.csv(
@@ -7,7 +17,7 @@ library(readxl)
 检验1 <- read.csv("C:/Users/user/Desktop/毕业课题/HBV治愈预测模型/HBV住院数据/检验.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE, fileEncoding = "GB18030")
 head(检验1)
 sum(检验1$收费项目名称 == "两对半定量", na.rm = TRUE)
-# 读取 CSV 文件（文件路径需要替换为实际路径）
+# 读取 CSV 文件（文件路径请改为实际路径）
 检验2 <- read.csv("C:/Users/user/Desktop/毕业课题/HBV治愈预测模型/HBV住院数据/检验2.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
 head(检验2)
 sum(检验2$收费项目名称 == "两对半定量", na.rm = TRUE)
@@ -178,7 +188,7 @@ df <- df %>%
 # 假设乙肝表面抗原列名为 "乙肝表面抗原"
 df <- df %>%
   mutate(
-    # 替换 ">250.0" 为 251
+    # 将 ">250.0" 记为 251
     乙肝表面抗原 = gsub(">250.0", "251", 乙肝表面抗原),
     
     # 转换为 numeric 类型
@@ -206,7 +216,7 @@ calculate_stats <- function(data) {
   # 移除可能存在的隐藏分组
   data <- data %>% ungroup()
   
-  # 连续变量统计（修改为Q1/Q3）
+  # 连续变量统计（采用 Q1/Q3 分位数）
   cont_stats <- data %>%
     summarise(
       across(c(年龄, 入院时间间隔, 住院次数, 血小板总数, 丙氨酸氨基转移酶, ART_duration),
@@ -263,7 +273,7 @@ calculate_stats <- function(data) {
     hbsag_counts
   ) %>% 
     mutate(Type = case_when(
-      str_detect(Variable, "_median|_q1|_q3") ~ "连续变量",  # 修改类型标识
+      str_detect(Variable, "_median|_q1|_q3") ~ "连续变量",  # 更新类型标识
       Variable %in% c("男性", "肝硬化", "HBV_阴性", "ART_naive") ~ "人口学特征",
       Variable %in% c("替诺福韦", "拉米夫定", "恩曲他滨", "阿德福韦", "替比夫定") ~ "药物使用",
       TRUE ~ "乙肝表面抗原分组"
