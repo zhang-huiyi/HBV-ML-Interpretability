@@ -1,12 +1,50 @@
-# 01_data_preprocessing.R - Data cleaning, imputation, baseline table
+####################################################################
+# 数据预处理脚本
+# 课题：乙肝多结局机器学习预测
+# 功能：
+# 1. 数据导入
+# 2. 数据类型修正
+# 3. 缺失值分析
+# 4. 异常值检测
+# 5. 正态性检验
+# 6. 结局类别分析
+# 7. 缺失值插补（防数据泄露）
+# 8. 基线特征表生成（SMD函数）
+# 9. 保存机器学习可用数据
+# 10. 生成完整预处理报告
+####################################################################
 
+##############################
+# 1. 环境准备
+##############################
 
-# ====== Data Cleaning (Patient-Level Split) ======
+required_packages <- c(
+  "readxl",
+  "data.table",
+  "tidyverse",
+  "skimr",
+  "naniar",
+  "VIM",
+  "mice",
+  "corrplot",
+  "gridExtra",
+  "writexl"
+)
+
+for(pkg in required_packages){
+  
+  if(!require(pkg, character.only = TRUE)){
+    install.packages(pkg)
+    library(pkg, character.only = TRUE)
+  }
+}
+
+set.seed(123)
+
 
 library(readxl)
 library(dplyr)
 library(writexl)
-library(caret)
 
 ##############################
 # 读取数据
@@ -291,99 +329,34 @@ cat("平均每位患者住院次数:",
 
 write_xlsx(
   train_raw,
-  "train_raw_patient_level.xlsx"
+  "J:/rtools45/train_raw_patient_level.xlsx"
 )
 
 write_xlsx(
   test_raw,
-  "test_raw_patient_level.xlsx"
+  "J:/rtools45/test_raw_patient_level.xlsx"
 )
 
 write_xlsx(
   train_ml,
-  "train_ml.xlsx"
+  "J:/rtools45/train_ml.xlsx"
 )
 
 write_xlsx(
   test_ml,
-  "test_ml.xlsx"
+  "J:/rtools45/test_ml.xlsx"
 )
 
 
-# ====== Data Preprocessing Pipeline ======
-
-####################################################################
-# 数据预处理脚本（最终医学论文规范版）
-# 课题：乙肝多结局机器学习预测
-# 功能：
-# 1. 数据导入
-# 2. 数据类型修正
-# 3. 缺失值分析
-# 4. 异常值检测
-# 5. 正态性检验
-# 6. 结局类别分析
-# 7. 缺失值插补（防数据泄露）
-# 8. 基线特征表生成（SMD函数）
-# 9. 保存机器学习可用数据
-# 10. 生成完整预处理报告
-####################################################################
-
 ##############################
-# 1. 环境准备
+# 原始数据清洗与训练/测试患者级划分
 ##############################
 
-required_packages <- c(
-  "readxl",
-  "data.table",
-  "tidyverse",
-  "skimr",
-  "naniar",
-  "VIM",
-  "mice",
-  "corrplot",
-  "gridExtra"
-)
+train_data <- as.data.table(train_ml)
+test_data  <- as.data.table(test_ml)
 
-for(pkg in required_packages){
-  
-  if(!require(pkg, character.only = TRUE)){
-    install.packages(pkg)
-    library(pkg, character.only = TRUE)
-  }
-}
-
-set.seed(123)
-
-
-##############################
-# 2. 数据路径
-##############################
-
-train_path <- "C:/Users/user/Desktop/小论文/ML数据/train_ml.xlsx"
-test_path  <- "C:/Users/user/Desktop/小论文/ML数据/test_ml.xlsx"
-
-if(!file.exists(train_path)){
-  stop("❌ train_ml.xlsx不存在")
-}
-
-if(!file.exists(test_path)){
-  stop("❌ test_ml.xlsx不存在")
-}
-
-cat("✓ 数据路径检查完成\n")
-
-##############################
-# 3. 数据读取
-##############################
-
-cat("\n【第一步】数据导入\n")
-cat(strrep("=", 60), "\n")
-
-train_data <- as.data.table(read_excel(train_path))
-test_data  <- as.data.table(read_excel(test_path))
-
-cat("训练集维度:", dim(train_data), "\n")
-cat("测试集维度:", dim(test_data), "\n")
+cat("✓ 原始数据清洗与划分完成（train_data / test_data 已在内存中生成）
+")
 
 ##############################
 # 4. 自动修正数值变量类型
@@ -1490,3 +1463,300 @@ writeLines(
 )
 
 cat("\n✅ 数据预处理完成！\n")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##############用于患者层面bootstrap验证的增加id的预处理数据集
+######################################################################
+# 生成三个结局共用的带患者ID预处理训练数据
+######################################################################
+
+library(readxl)
+library(data.table)
+library(writexl)
+
+######################################################################
+# 1. 文件路径
+######################################################################
+
+# 带患者ID、尚未预处理的训练数据
+raw_train_path <-
+  "J:/rtools45/train_raw_patient_level.xlsx"
+
+# 原来的完整预处理训练数据，包含三个结局
+processed_train_path <-
+  "J:/rtools45/train_preprocessed.rds"
+
+# 输出路径
+output_rds_path <-
+  "J:/rtools45/train_preprocessed_with_id.rds"
+
+output_xlsx_path <-
+  "J:/rtools45/train_preprocessed_with_id.xlsx"
+
+######################################################################
+# 2. 检查文件
+######################################################################
+
+if(!file.exists(raw_train_path)){
+  stop(
+    paste0(
+      "❌ 找不到原始患者级训练数据：",
+      raw_train_path
+    )
+  )
+}
+
+if(!file.exists(processed_train_path)){
+  stop(
+    paste0(
+      "❌ 找不到原预处理训练数据：",
+      processed_train_path
+    )
+  )
+}
+
+######################################################################
+# 3. 读取数据
+######################################################################
+
+raw_train <- as.data.table(
+  read_excel(raw_train_path)
+)
+
+processed_train <- as.data.table(
+  readRDS(processed_train_path)
+)
+
+cat(
+  "\n患者级原始训练数据维度：",
+  nrow(raw_train),
+  "×",
+  ncol(raw_train),
+  "\n"
+)
+
+cat(
+  "原预处理训练数据维度：",
+  nrow(processed_train),
+  "×",
+  ncol(processed_train),
+  "\n"
+)
+
+######################################################################
+# 4. 检查ID
+######################################################################
+
+if(!"id" %in% names(raw_train)){
+  stop("❌ train_raw_patient_level.xlsx中没有id列")
+}
+
+if(any(is.na(raw_train$id))){
+  stop("❌ 患者ID中存在缺失值")
+}
+
+cat(
+  "唯一患者数：",
+  uniqueN(raw_train$id),
+  "\n"
+)
+
+######################################################################
+# 5. 检查行数
+######################################################################
+
+if(nrow(raw_train) != nrow(processed_train)){
+  
+  stop(
+    paste0(
+      "❌ 原始训练数据与预处理训练数据行数不一致：",
+      "\n原始训练数据 = ",
+      nrow(raw_train),
+      "\n预处理训练数据 = ",
+      nrow(processed_train)
+    )
+  )
+}
+
+######################################################################
+# 6. 检查三个结局
+######################################################################
+
+outcome_cols_all <- c(
+  "Outcome_Disease Non-Progression",
+  "Outcome_Liver Cirrhosis",
+  "Outcome_Hepatocellular Carcinoma"
+)
+
+missing_outcomes <- setdiff(
+  outcome_cols_all,
+  names(processed_train)
+)
+
+if(length(missing_outcomes) > 0){
+  
+  stop(
+    paste0(
+      "❌ 原预处理数据缺少以下结局：",
+      paste(
+        missing_outcomes,
+        collapse = ", "
+      )
+    )
+  )
+}
+
+cat("\n三个结局变量均存在：\n")
+print(outcome_cols_all)
+
+######################################################################
+# 7. 添加ID
+######################################################################
+
+train_preprocessed_with_id <- copy(
+  processed_train
+)
+
+train_preprocessed_with_id[
+  ,
+  id := raw_train$id
+]
+
+# 将ID放在第一列
+setcolorder(
+  train_preprocessed_with_id,
+  c(
+    "id",
+    setdiff(
+      names(train_preprocessed_with_id),
+      "id"
+    )
+  )
+)
+
+######################################################################
+# 8. 检查ID没有改变原数据
+######################################################################
+
+data_without_id <- copy(
+  train_preprocessed_with_id
+)
+
+data_without_id[
+  ,
+  id := NULL
+]
+
+if(!identical(
+  names(data_without_id),
+  names(processed_train)
+)){
+  
+  stop(
+    "❌ 添加ID后，原预处理数据的变量名称或变量顺序发生变化"
+  )
+}
+
+if(!isTRUE(
+  all.equal(
+    data_without_id,
+    processed_train,
+    check.attributes = TRUE
+  )
+)){
+  
+  stop(
+    "❌ 添加ID后，删除ID不能完全恢复原预处理数据"
+  )
+}
+
+cat(
+  "\n✓ 加入ID后，原来的预处理数据没有发生变化\n"
+)
+
+######################################################################
+# 9. 输出数据概况
+######################################################################
+
+cat(
+  "\n最终数据行数：",
+  nrow(train_preprocessed_with_id),
+  "\n"
+)
+
+cat(
+  "最终数据列数：",
+  ncol(train_preprocessed_with_id),
+  "\n"
+)
+
+cat(
+  "唯一患者数：",
+  uniqueN(train_preprocessed_with_id$id),
+  "\n"
+)
+
+cat(
+  "重复住院记录数：",
+  nrow(train_preprocessed_with_id) -
+    uniqueN(train_preprocessed_with_id$id),
+  "\n"
+)
+
+cat("\n三个结局的分布：\n")
+
+for(outcome_col in outcome_cols_all){
+  
+  cat(
+    "\n",
+    outcome_col,
+    "：\n",
+    sep = ""
+  )
+  
+  print(
+    table(
+      train_preprocessed_with_id[[outcome_col]],
+      useNA = "ifany"
+    )
+  )
+}
+
+######################################################################
+# 10. 保存RDS
+######################################################################
+
+saveRDS(
+  train_preprocessed_with_id,
+  output_rds_path
+)
+
+######################################################################
+# 11. 保存Excel
+######################################################################
+
+write_xlsx(
+  as.data.frame(
+    train_preprocessed_with_id
+  ),
+  output_xlsx_path
+)
+
+cat("\n============================================\n")
+cat("✓ 三个结局共用的带ID训练数据生成成功\n")
+cat("RDS：", output_rds_path, "\n")
+cat("Excel：", output_xlsx_path, "\n")
+cat("============================================\n")
+
