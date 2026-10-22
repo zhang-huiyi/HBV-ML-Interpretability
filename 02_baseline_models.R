@@ -48,18 +48,18 @@ set.seed(123)
 future::plan("sequential")
 
 cat("====================================================\n")
-cat(" XGBoost模型训练（最终SCI审稿版）\n")
+cat(" XGBoost模型训练\n")
 cat("====================================================\n")
 
 ##############################
 # 2. 创建结果文件夹
 ##############################
 
-result_dir <- "XGBoost_Results"
+result_dir <- "J:/rtools45/XGBoost_Results"
 
 if(!dir.exists(result_dir)){
   
-  dir.create(result_dir)
+  dir.create(result_dir, recursive = TRUE)
 }
 
 cat("\n结果保存位置:\n")
@@ -69,9 +69,9 @@ cat(result_dir, "\n")
 # 3. 数据读取
 ##############################
 
-train_path <- "C:/Users/user/Desktop/小论文/ML数据/train_preprocessed.xlsx"
+train_path <- "J:/rtools45/train_preprocessed.xlsx"
 
-test_path <- "C:/Users/user/Desktop/小论文/ML数据/test_preprocessed.xlsx"
+test_path <- "J:/rtools45/test_preprocessed.xlsx"
 
 if(!file.exists(train_path)){
   stop("❌ train_preprocessed.xlsx不存在")
@@ -279,7 +279,7 @@ train_xgb_model <- function(
     
     eval_metric = "auc",
     
-    # 轻度放松（SCI安全版）
+    # 轻度放松
     nrounds = 200,
     
     eta = 0.03,
@@ -738,10 +738,10 @@ train_xgb_model <- function(
     )
   }
   ####################################
-  # 6.27 保存完整模型对象（SCI最终稳定版）
+  # 6.27 保存完整模型对象
   ####################################
   
-  cat("\n开始保存完整模型对象（SHAP稳定版）...\n")
+  cat("\n开始保存完整模型对象...\n")
   
   ############################################################
   # 1. feature_levels（分类变量映射）
@@ -783,7 +783,7 @@ train_xgb_model <- function(
   
   
   ############################################################
-  # 3. 真正Final Booster（最终SCI稳定版）
+  # 3. 重新训练 Final Booster
   ############################################################
   
   cat("\n重新训练真正Final Booster...\n")
@@ -960,7 +960,7 @@ train_xgb_model <- function(
   )
   
   ############################################################
-  # 9. 数据hash（审稿追溯）
+  # 9. 数据hash（结果追溯）
   ############################################################
   
   data_hash <- list(
@@ -1116,7 +1116,7 @@ train_xgb_model <- function(
     )
   )
   
-  cat("\n✓ FULL_MODEL保存完成（SHAP稳定最终版）\n")
+  cat("\n✓ FULL_MODEL保存完成\n")
   ####################################
   # 6.28 保存报告
   ####################################
@@ -1344,18 +1344,18 @@ set.seed(123)
 future::plan("sequential")
 
 cat("====================================================\n")
-cat(" LightGBM模型训练（最终SCI统一终稿版）\n")
+cat(" LightGBM模型训练\n")
 cat("====================================================\n")
 
 ############################################################
 # 2. 创建结果文件夹
 ############################################################
 
-result_dir <- "LightGBM_Results"
+result_dir <- "J:/rtools45/LightGBM_Results"
 
 if(!dir.exists(result_dir)){
   
-  dir.create(result_dir)
+  dir.create(result_dir, recursive = TRUE)
 }
 
 cat("\n结果保存位置:\n")
@@ -1365,9 +1365,9 @@ cat(result_dir, "\n")
 # 3. 数据读取
 ############################################################
 
-train_path <- "C:/Users/user/Desktop/小论文/ML数据/train_preprocessed.xlsx"
+train_path <- "J:/rtools45/train_preprocessed.xlsx"
 
-test_path <- "C:/Users/user/Desktop/小论文/ML数据/test_preprocessed.xlsx"
+test_path <- "J:/rtools45/test_preprocessed.xlsx"
 
 if(!file.exists(train_path)){
   
@@ -2289,18 +2289,18 @@ set.seed(123)
 future::plan("sequential")
 
 cat("====================================================\n")
-cat(" GBM模型训练（最终SCI终稿版）\n")
+cat(" GBM模型训练\n")
 cat("====================================================\n")
 
 ############################################################
 # 2. 创建结果文件夹
 ############################################################
 
-result_dir <- "GBM_Results"
+result_dir <- "J:/rtools45/GBM_Results"
 
 if(!dir.exists(result_dir)){
   
-  dir.create(result_dir)
+  dir.create(result_dir, recursive = TRUE)
 }
 
 cat("\n结果保存位置:\n")
@@ -2310,9 +2310,9 @@ cat(result_dir, "\n")
 # 3. 数据读取
 ############################################################
 
-train_path <- "C:/Users/user/Desktop/小论文/ML数据/train_preprocessed.xlsx"
+train_path <- "J:/rtools45/train_preprocessed.xlsx"
 
-test_path <- "C:/Users/user/Desktop/小论文/ML数据/test_preprocessed.xlsx"
+test_path <- "J:/rtools45/test_preprocessed.xlsx"
 
 if(!file.exists(train_path)){
   
@@ -3255,18 +3255,18 @@ for(pkg in required_packages){
 set.seed(123)
 
 cat("====================================================\n")
-cat(" Logistic Regression模型训练（最终SCI审稿版）\n")
+cat(" Logistic Regression模型训练\n")
 cat("====================================================\n")
 
 ##############################
 # 2. 创建结果文件夹
 ##############################
 
-result_dir <- "Logistic_Regression_Results"
+result_dir <- "J:/rtools45/Logistic_Regression_Results"
 
 if(!dir.exists(result_dir)){
   
-  dir.create(result_dir)
+  dir.create(result_dir, recursive = TRUE)
 }
 
 cat("\n结果保存位置:\n")
@@ -3276,9 +3276,9 @@ cat(result_dir, "\n")
 # 3. 数据读取
 ##############################
 
-train_path <- "C:/Users/user/Desktop/小论文/ML数据/train_preprocessed.xlsx"
+train_path <- "J:/rtools45/train_preprocessed.xlsx"
 
-test_path <- "C:/Users/user/Desktop/小论文/ML数据/test_preprocessed.xlsx"
+test_path <- "J:/rtools45/test_preprocessed.xlsx"
 
 if(!file.exists(train_path)){
   
@@ -4101,25 +4101,25 @@ set.seed(123)
 future::plan("sequential")
 
 cat("====================================================\n")
-cat(" GLMnet模型训练（最终SCI统一终稿版）\n")
+cat(" GLMnet模型训练\n")
 cat("====================================================\n")
 
 ############################
 # 3. 结果文件夹
 ############################
-result_dir <- "GLMnet_Results"
+result_dir <- "J:/rtools45/GLMnet_Results"
 
 if(!dir.exists(result_dir)){
   
-  dir.create(result_dir)
+  dir.create(result_dir, recursive = TRUE)
 }
 
 ############################
 # 4. 导入数据
 ############################
-train_path <- "C:/Users/user/Desktop/小论文/ML数据/train_preprocessed.xlsx"
+train_path <- "J:/rtools45/train_preprocessed.xlsx"
 
-test_path <- "C:/Users/user/Desktop/小论文/ML数据/test_preprocessed.xlsx"
+test_path <- "J:/rtools45/test_preprocessed.xlsx"
 
 train_data <- as.data.table(read_excel(train_path))
 
@@ -4856,14 +4856,14 @@ future::plan("sequential")
 set.seed(123)
 
 cat("====================================================\n")
-cat(" Conditional Random Forest（最终SCI稳定版）\n")
+cat(" Conditional Random Forest\n")
 cat("====================================================\n")
 
 ######################################################################
 # 结果目录
 ######################################################################
 
-result_dir <- "ConditionalRF_Results"
+result_dir <- "J:/rtools45/ConditionalRF_Results"
 
 if(!dir.exists(result_dir)){
   
@@ -4874,9 +4874,9 @@ if(!dir.exists(result_dir)){
 # 数据路径
 ######################################################################
 
-train_path <- "C:/Users/user/Desktop/小论文/ML数据/train_preprocessed.xlsx"
+train_path <- "J:/rtools45/train_preprocessed.xlsx"
 
-test_path <- "C:/Users/user/Desktop/小论文/ML数据/test_preprocessed.xlsx"
+test_path <- "J:/rtools45/test_preprocessed.xlsx"
 
 if(!file.exists(train_path)){
   
@@ -5702,18 +5702,18 @@ set.seed(123)
 future::plan("sequential")
 
 cat("====================================================\n")
-cat(" Random Forest模型训练（最终SCI终稿稳定版）\n")
+cat(" Random Forest模型训练\n")
 cat("====================================================\n")
 
 ############################################################
 # 2. 创建结果文件夹
 ############################################################
 
-result_dir <- "RandomForest_Results"
+result_dir <- "J:/rtools45/RandomForest_Results"
 
 if(!dir.exists(result_dir)){
   
-  dir.create(result_dir)
+  dir.create(result_dir, recursive = TRUE)
 }
 
 cat("\n结果保存位置:\n")
@@ -5723,9 +5723,9 @@ cat(result_dir, "\n")
 # 3. 数据读取
 ############################################################
 
-train_path <- "C:/Users/user/Desktop/小论文/ML数据/train_preprocessed.xlsx"
+train_path <- "J:/rtools45/train_preprocessed.xlsx"
 
-test_path <- "C:/Users/user/Desktop/小论文/ML数据/test_preprocessed.xlsx"
+test_path <- "J:/rtools45/test_preprocessed.xlsx"
 
 if(!file.exists(train_path)){
   
@@ -5935,7 +5935,7 @@ train_rf_model <- function(
   test_y <- as.numeric(test_df[[outcome_col]]) - 1
   
   ####################################################
-  # 6.8 防过拟合参数空间（最终稳定版）
+  # 6.8 防过拟合参数空间
   ####################################################
   
   search_grid <- data.frame(
@@ -6717,18 +6717,18 @@ set.seed(123)
 future::plan("sequential")
 
 cat("====================================================\n")
-cat(" MLP模型训练（最终SCI审稿版）\n")
+cat(" MLP模型训练\n")
 cat("====================================================\n")
 
 ##############################
 # 2. 创建结果文件夹
 ##############################
 
-result_dir <- "MLP_Results"
+result_dir <- "J:/rtools45/MLP_Results"
 
 if(!dir.exists(result_dir)){
   
-  dir.create(result_dir)
+  dir.create(result_dir, recursive = TRUE)
 }
 
 cat("\n结果保存位置:\n")
@@ -6738,9 +6738,9 @@ cat(result_dir, "\n")
 # 3. 数据读取
 ##############################
 
-train_path <- "C:/Users/user/Desktop/小论文/ML数据/train_preprocessed.xlsx"
+train_path <- "J:/rtools45/train_preprocessed.xlsx"
 
-test_path <- "C:/Users/user/Desktop/小论文/ML数据/test_preprocessed.xlsx"
+test_path <- "J:/rtools45/test_preprocessed.xlsx"
 
 if(!file.exists(train_path)){
   stop("❌ train_preprocessed.xlsx不存在")
