@@ -14,7 +14,6 @@ Scripts are executed in numerical order (`00` → `08`).
 
 | Script | Purpose |
 | --- | --- |
-| `00_data_merging.R` | Raw cohort data merging and initial consolidation of variables |
 | `01_data_preprocessing.R` | Data cleaning, patient-level train/test split, missing value imputation, baseline characteristics table, export of the modelling datasets |
 | `02_baseline_models.R` | Training and hyperparameter tuning of ML algorithms (XGBoost, LightGBM, GBM, GLMNet, Conditional RF, RF, MLP, Logistic Regression) |
 | `03_model_comparison.R` | DeLong tests for pairwise AUC comparison, ROC curve generation |
