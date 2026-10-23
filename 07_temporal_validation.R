@@ -19,7 +19,7 @@ library(caret)
 ##############################
 
 dhbv <- read_excel(
-  "C:/Users/user/Desktop/小论文/乙肝三结局预测数据结果集合/dhbv.xlsx 2026.05.17.xlsx"
+  "C:/Users/user/Desktop/dhbv.xlsx"
 )
 
 output_dir <- "J:/rtools45/time_validation_output"
