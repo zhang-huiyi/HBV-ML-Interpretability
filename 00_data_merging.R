@@ -11,14 +11,14 @@
 # 读入数据
 library(readxl)
 患者 <- read.csv(
-  "C:/Users/user/Desktop/毕业课题/HBV治愈预测模型/HBV住院数据/患者.csv"
+  "C:/Users/user/Desktop/HBV住院数据/患者.csv"
 )
-病历号对应患者唯一号 <- read_excel("C:/Users/user/Desktop/毕业课题/HBV治愈预测模型/HBV住院数据/病历号对应患者唯一号.xlsx")
-检验1 <- read.csv("C:/Users/user/Desktop/毕业课题/HBV治愈预测模型/HBV住院数据/检验.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE, fileEncoding = "GB18030")
+病历号对应患者唯一号 <- read_excel("C:/Users/user/Desktop/HBV住院数据/病历号对应患者唯一号.xlsx")
+检验1 <- read.csv("C:/Users/user/Desktop/HBV住院数据/检验.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE, fileEncoding = "GB18030")
 head(检验1)
 sum(检验1$收费项目名称 == "两对半定量", na.rm = TRUE)
 # 读取 CSV 文件（文件路径请改为实际路径）
-检验2 <- read.csv("C:/Users/user/Desktop/毕业课题/HBV治愈预测模型/HBV住院数据/检验2.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+检验2 <- read.csv("C:/Users/user/Desktop/HBV住院数据/检验2.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
 head(检验2)
 sum(检验2$收费项目名称 == "两对半定量", na.rm = TRUE)
 
